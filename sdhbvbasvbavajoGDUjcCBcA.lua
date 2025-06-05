@@ -1,12 +1,8 @@
--- // Highlights Module
-
 local MODULE = {}
 
--- // Services
 local PLAYERS = game:GetService("Players")
 local CAMERA = workspace.CurrentCamera
 
--- // Constants
 MODULE.HIGHLIGHT_UPDATE_INTERVAL = 1
 MODULE.HIGHLIGHT_ALIVE_COLOR = Color3.fromRGB(100, 255, 100)
 MODULE.HIGHLIGHT_DEAD_COLOR = Color3.fromRGB(255, 100, 100)
@@ -20,11 +16,9 @@ MODULE.TARGET_LIST_FILL_TRANSPARENCY = 0.4
 MODULE.TARGET_LIST_OUTLINE_TRANSPARENCY = 0.5
 MODULE.TARGET_LIST_DEPTH_MODE = Enum.HighlightDepthMode.AlwaysOnTop
 
--- // Variables
 MODULE.TARGET_HIGHLIGHTS = {}
 MODULE.LAST_HIGHLIGHT_UPDATE_TIME = 0
 
--- // Functions
 function MODULE.CREATE_HIGHLIGHT(TARGET_CHARACTER, IS_DOWN_CHECK_ENABLED, CHECK_DOWNED_FUNCTION, TARGET_PLAYER)
     if not TARGET_CHARACTER then return end
 
@@ -36,14 +30,12 @@ function MODULE.CREATE_HIGHLIGHT(TARGET_CHARACTER, IS_DOWN_CHECK_ENABLED, CHECK_
         end
     end
 
-    -- Check if highlight already exists
     local EXISTING_HIGHLIGHT = TARGET_CHARACTER:FindFirstChild("TargetHighlight")
     if EXISTING_HIGHLIGHT then
         EXISTING_HIGHLIGHT.FillColor = IS_ALIVE and MODULE.HIGHLIGHT_ALIVE_COLOR or MODULE.HIGHLIGHT_DEAD_COLOR
         return EXISTING_HIGHLIGHT
     end
 
-    -- Create new highlight
     local HIGHLIGHT = Instance.new("Highlight")
     HIGHLIGHT.Name = "TargetHighlight"
     HIGHLIGHT.FillColor = IS_ALIVE and MODULE.HIGHLIGHT_ALIVE_COLOR or MODULE.HIGHLIGHT_DEAD_COLOR
@@ -57,7 +49,6 @@ function MODULE.CREATE_HIGHLIGHT(TARGET_CHARACTER, IS_DOWN_CHECK_ENABLED, CHECK_
 end
 
 function MODULE.CREATE_LOCK_INDICATOR(TARGET_CHARACTER, DOWN_CHECK, CHECK_DOWNED_FUNCTION, TARGET_PLAYER)
-    -- Remove existing indicator if any
     local EXISTING_INDICATOR = TARGET_CHARACTER:FindFirstChild("LockIndicator")
     if EXISTING_INDICATOR then
         EXISTING_INDICATOR:Destroy()
@@ -67,7 +58,6 @@ function MODULE.CREATE_LOCK_INDICATOR(TARGET_CHARACTER, DOWN_CHECK, CHECK_DOWNED
         return nil
     end
 
-    -- Create billboard
     local BILLBOARD = Instance.new("BillboardGui")
     BILLBOARD.Name = "LockIndicator"
     BILLBOARD.Size = UDim2.new(0, 1, 0, 1)
@@ -76,7 +66,6 @@ function MODULE.CREATE_LOCK_INDICATOR(TARGET_CHARACTER, DOWN_CHECK, CHECK_DOWNED
     BILLBOARD.AlwaysOnTop = true
     BILLBOARD.Parent = TARGET_CHARACTER
 
-    -- Create highlight
     local HIGHLIGHT = MODULE.CREATE_HIGHLIGHT(TARGET_CHARACTER, DOWN_CHECK, CHECK_DOWNED_FUNCTION, TARGET_PLAYER)
     
     return BILLBOARD, HIGHLIGHT
@@ -100,12 +89,10 @@ function MODULE.CREATE_TARGET_LIST_HIGHLIGHT(PLAYER, DOWN_CHECK, CHECK_DOWNED_FU
     end
 
     if EXISTING_HIGHLIGHT and EXISTING_HIGHLIGHT.Parent then
-        -- Update existing highlight
         EXISTING_HIGHLIGHT.FillColor = not IS_DOWNED and MODULE.TARGET_LIST_ALIVE_COLOR or MODULE.TARGET_LIST_DEAD_COLOR
         EXISTING_HIGHLIGHT.OutlineColor = MODULE.TARGET_LIST_OUTLINE_COLOR
         return EXISTING_HIGHLIGHT, IS_PRIORITY
     else
-        -- Create new highlight
         local HIGHLIGHT = Instance.new("Highlight")
         HIGHLIGHT.Name = MODULE.TARGET_LIST_HIGHLIGHT_NAME
         HIGHLIGHT.FillColor = not IS_DOWNED and MODULE.TARGET_LIST_ALIVE_COLOR or MODULE.TARGET_LIST_DEAD_COLOR
@@ -148,14 +135,12 @@ function MODULE.UPDATE_TARGET_LIST_HIGHLIGHTS(TARGET_LIST, CHECK_DOWNED_FUNCTION
     if tick() - MODULE.LAST_HIGHLIGHT_UPDATE_TIME < MODULE.HIGHLIGHT_UPDATE_INTERVAL then return end
     MODULE.LAST_HIGHLIGHT_UPDATE_TIME = tick()
 
-    -- Update highlights for players in target list
     for _, PLAYER in ipairs(TARGET_LIST) do
         if PLAYER and PLAYER.Character then
             MODULE.CREATE_TARGET_LIST_HIGHLIGHT(PLAYER, DOWN_CHECK, CHECK_DOWNED_FUNCTION)
         end
     end
 
-    -- Remove highlights for players no longer in target list
     for PLAYER_NAME, HIGHLIGHT in pairs(MODULE.TARGET_HIGHLIGHTS) do
         local STILL_IN_LIST = false
         for _, PLAYER in ipairs(TARGET_LIST) do
