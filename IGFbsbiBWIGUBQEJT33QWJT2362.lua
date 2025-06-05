@@ -1,6 +1,3 @@
--- Section 1 Functions (ForceHit-Extra.lua)
--- This file is designed to be loaded via loadstring from a raw GitHub URL
-
 local PLAYERS = game:GetService("Players")
 local LOCAL_PLAYER = PLAYERS.LocalPlayer
 local CAMERA = workspace.CurrentCamera
